@@ -1,0 +1,22 @@
+Package: IPA: 
+Type: Package
+Title: Image Processing and Analysis pipeline
+Version: 0.0.1
+Authors@R: c(
+    person(given = "Roberto",
+           family = "Villegas-Diaz",
+           role = c("aut", "cre"),
+           email = "villegas.roberto@hotmail.com",
+           comment = c(ORCID = "0000-0001-5036-8661"))
+           )
+Description: Toolkit for image processing and analysis on vitis datasets.
+URL: https://github.com/villegar/IPA
+BugReports: https://github.com/villegar/IPA/issues
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    here,
+    imager
+Depends: 
+    R (>= 3.6)
