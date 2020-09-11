@@ -1,5 +1,8 @@
 #' Generate an RGB decomposition for a group of images inside a directory
 #'
+#' @importFrom graphics barplot
+#' @importFrom grDevices dev.off
+#' @importFrom grDevices png
 #' @importFrom utils write.csv
 #' @param subdirectory main directory to search for images
 #' @param extension images format or extension [default: jpg]
@@ -17,18 +20,18 @@
 #' rgb_decomposition(".", "png", recursive = FALSE)
 rgb_decomposition <- function(subdirectory, extension = "jpg", Rdata = TRUE, recursive = TRUE) {
   extension <- paste0("*", extension, "$") # Adding regex pattern
-  images <- list.files(here::here(subdirectory),
+  images <- list.files(subdirectory,
                        pattern = extension,
                        full.names = FALSE,
                        recursive = recursive)
   for (i in images) {
-    message(paste0("Processing: ", here::here(subdirectory, i)))
-    tmp <- imager::load.image(here::here(subdirectory, i)) # Load image
+    message(paste0("Processing: ", file.path(subdirectory, i)))
+    tmp <- imager::load.image(file.path(subdirectory, i)) # Load image
     red <- imager::R(tmp) # Extract red layer
     green <- imager::G(tmp) # Extract green layer
     blue <- imager::B(tmp) # Extract blue layer
     # Extract filename without extension
-    j <- here::here(subdirectory, gsub(".$", "", gsub(extension, "", i)))
+    j <- file.path(subdirectory, gsub(".$", "", gsub(extension, "", i)))
     if (Rdata) {
       # Save each layer as a separate Rdata file (smaller)
       save(red, file = paste0(j, '-red.Rdata'))
