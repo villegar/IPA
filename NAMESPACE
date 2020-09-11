@@ -2,4 +2,7 @@
 
 export(hex_logo)
 export(rgb_decomposition)
+importFrom(grDevices,dev.off)
+importFrom(grDevices,png)
+importFrom(graphics,barplot)
 importFrom(utils,write.csv)
