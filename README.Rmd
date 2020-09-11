@@ -18,6 +18,7 @@ Image Processing and Analysis pipeline
 <!-- badges: start -->
 <!-- `r badger::badge_devel("villegar/IPA", "blue")` -->
 <!-- `r badger::badge_code_size("villegar/IPA")` -->
+[![R build status](https://github.com/villegar/IPA/workflows/R-CMD-check/badge.svg)](https://github.com/villegar/IPA/actions)
 <!-- badges: end -->
 
 ## Overview

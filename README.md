@@ -12,6 +12,8 @@ pipeline
 
 <!-- [![](https://img.shields.io/github/languages/code-size/villegar/IPA.svg)](https://github.com/villegar/IPA) -->
 
+[![R build
+status](https://github.com/villegar/IPA/workflows/R-CMD-check/badge.svg)](https://github.com/villegar/IPA/actions)
 <!-- badges: end -->
 
 ## Overview
