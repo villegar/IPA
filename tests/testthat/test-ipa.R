@@ -4,9 +4,10 @@ test_that("RGB decomposition works", {
   png("test_plot.png")
   barplot(height = test_data$values, names = test_data$name, col = RGB)
   dev.off()
-  rgb_decomposition(".", "png", recursive = FALSE)
+  rgb_decomposition(here::here(), "png", recursive = FALSE)
   # Check for generated histograms
-  filenames <- c("test_plot-blue.Rdata",
+  filenames <- c("test_plot.png",
+                 "test_plot-blue.Rdata",
                  "test_plot-green.Rdata",
                  "test_plot-red.Rdata")
   for (f in filenames) {
