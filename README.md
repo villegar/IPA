@@ -159,3 +159,7 @@ explore the `subdirectory` recursively for more images.
 ``` r
 rgb_decomposition("inst/figures/", "png", recursive = FALSE)
 ```
+
+After running this, three new files (per image) will be on disk, called
+`IMAGE-NAME-red.Rdata`, `IMAGE-NAME-green.Rdata`, and
+`IMAGE-NAME-blue.Rdata`.
