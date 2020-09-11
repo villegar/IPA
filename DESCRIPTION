@@ -18,5 +18,13 @@ LazyData: true
 Imports:
     here,
     imager
+Suggests:
+    badger,
+    hexSticker,
+    knitr,
+    kableExtra,
+    rmarkdown,
+    testthat
 Depends: 
     R (>= 3.6)
+RoxygenNote: 7.1.1
