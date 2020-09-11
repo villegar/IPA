@@ -19,15 +19,16 @@ rgb_decomposition <- function(subdirectory, extension = "jpg", Rdata = TRUE, rec
   extension <- paste0("*", extension, "$") # Adding regex pattern
   images <- list.files(here::here(subdirectory),
                        pattern = extension,
-                       full.names = TRUE,
+                       full.names = FALSE,
                        recursive = recursive)
   for (i in images) {
-    tmp <- imager::load.image(i) # Load image
+    message(paste0("Processing: ", here::here(subdirectory, i)))
+    tmp <- imager::load.image(here::here(subdirectory, i)) # Load image
     red <- imager::R(tmp) # Extract red layer
     green <- imager::G(tmp) # Extract green layer
     blue <- imager::B(tmp) # Extract blue layer
     # Extract filename without extension
-    j <- gsub(".$", "", gsub(extension, "", i))
+    j <- here::here(subdirectory, gsub(".$", "", gsub(extension, "", i)))
     if (Rdata) {
       # Save each layer as a separate Rdata file (smaller)
       save(red, file = paste0(j, '-red.Rdata'))
