@@ -14,12 +14,15 @@
 #' @export
 #'
 #' @examples
+#' hex_logo()
+#' \dontrun{
 #' hex_logo("inst/images/beer.png", output = "inst/images/logo.png")
-hex_logo <- function(subplot = system.file("figures/beer.png", package = "IPA"),
+#' }
+hex_logo <- function(subplot = system.file("images/beer.png", package = "IPA"),
                      dpi = 600,
                      h_color = "#000000",
                      h_fill = "#696969",
-                     output = system.file("figures/logo.png", package = "IPA"),
+                     output = system.file("images/logo.png", package = "IPA"),
                      package = "IPA",
                      p_color = "#eeeeee",
                      url = "https://github.com/villegar/IPA",
