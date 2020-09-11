@@ -1,6 +1,16 @@
-
+---
+output: github_document
+always_allow_html: yes
+---
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "figures/README-",
+  out.width = "100%"
+)
+```
 
 # IPA <img src="https://raw.githubusercontent.com/villegar/villegar/master/inst/figures/logo.png" alt="logo" align="right" height=200px/>
-
 Image Processing and Analysis pipeline
