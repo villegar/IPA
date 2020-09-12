@@ -44,6 +44,23 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
 
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          remotes::install_github("gagolews/stringi")
+          remotes::install_github("dahtah/imager")
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
+      - name: Cache R packages
+        if: runner.os != 'Windows'
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -64,23 +81,6 @@ jobs:
         run: |
           choco install cairoshell
           choco install xming
-
-      - name: Query dependencies
-        run: |
-          install.packages('remotes')
-          remotes::install_github("gagolews/stringi")
-          install.packages('imager', dependencies = TRUE)
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-        shell: Rscript {0}
-
-      - name: Cache R packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v1
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install dependencies
         run: |
