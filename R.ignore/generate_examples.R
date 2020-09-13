@@ -1,0 +1,17 @@
+donotrun <- function() {
+  test_data <- data.frame(name = c("R", "G", "B"), values = c(2, 2, 2))
+  RGB <- c("red", "green", "blue")
+  png("inst/figures/test_plot.png", res = 300, units = "in", width = 5, height = 5)
+  barplot(height = test_data$values, names = test_data$name, col = RGB)
+  dev.off()
+  tmp <- imager::load.image("inst/figures/test_plot.png")
+  png("inst/figures/test_plot_R.png", res = 300, units = "in", width = 5, height = 5)
+  plot(imager::R(tmp), axes = FALSE, xlab = NULL, ylab = NULL)
+  dev.off()
+  png("inst/figures/test_plot_G.png", res = 300, units = "in", width = 5, height = 5)
+  plot(imager::G(tmp), axes = FALSE, xlab = NULL, ylab = NULL)
+  dev.off()
+  png("inst/figures/test_plot_B.png", res = 300, units = "in", width = 5, height = 5)
+  plot(imager::B(tmp), axes = FALSE, xlab = NULL, ylab = NULL)
+  dev.off()
+}
