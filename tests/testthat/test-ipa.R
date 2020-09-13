@@ -5,7 +5,7 @@ test_that("RGB decomposition works", {
     barplot(height = test_data$values, names = test_data$name, col = RGB)
   dev.off()
   rgb_decomposition(".", "png", recursive = FALSE)
-  # Check for generated histograms
+  # Check for generated layer files
   filenames <- c("test_plot.png",
                  "test_plot-blue.Rdata",
                  "test_plot-green.Rdata",
