@@ -11,6 +11,8 @@
 
 [![R build
 status](https://github.com/villegar/IPA/workflows/R-CMD-check/badge.svg)](https://github.com/villegar/IPA/actions)
+[![](https://img.shields.io/badge/devel%20version-0.0.1-blue.svg)](https://github.com/villegar/MetaPipe)
+[![](https://codecov.io/gh/villegar/IPA/branch/master/graph/badge.svg)](https://codecov.io/gh/villegar/IPA)
 <!-- badges: end -->
 
 ## Overview

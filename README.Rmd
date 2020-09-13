@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 <!-- `r badger::badge_devel("villegar/IPA", "blue")` -->
 <!-- `r badger::badge_code_size("villegar/IPA")` -->
 [![R build status](https://github.com/villegar/IPA/workflows/R-CMD-check/badge.svg)](https://github.com/villegar/IPA/actions)
+`r badger::badge_devel("villegar/MetaPipe", "blue")`
+`r badger::badge_codecov("villegar/IPA")`
 <!-- badges: end -->
 
 ## Overview
