@@ -38,7 +38,7 @@ The goal of IPA is to provide a set of functions for image processing and analys
 
 You can install the development version from [GitHub](https://github.com/) with:
 ``` r
-# install.packages(c("hexSticker", "remotes")
+# install.packages(c("hexSticker", "remotes"))
 remotes::install_github("villegar/IPA")
 ```
 
