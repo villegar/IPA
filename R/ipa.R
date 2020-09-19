@@ -48,3 +48,27 @@ rgb_decomposition <- function(subdirectory, extension = "jpg", Rdata = TRUE, rec
     }
   }
 }
+
+rm_background <- function(subdirectory, extension = "jpg", Rdata = TRUE, recursive = TRUE) {
+  tmp <- imager::load.image(leaves)
+  tmp <- imager::rm.alpha(tmp)
+  idx <- tmp < 0.4
+  alpha <- matrix(0, 5104, 7200)
+  # alpha <- imager::as.cimg(alpha, 5104, 7200)
+  alpha[!idx] <- 1
+  plot(alpha)
+  alpha <- matrix(alpha, 5104, 7200, byrow = TRUE)
+  alpha <- imager::as.cimg(alpha, 5104, 7200)
+  plot(alpha)
+  tmp[idx] <- 0
+  imager::save.image(tmp, "new.png")
+  plot(tmp)
+
+  tmp.g <- imager::grayscale(tmp)
+  gr <- imager::imgradient(tmp.g, "xy")
+  plot(gr, layout = "row")
+  dx <- imager::imgradient(tmp.g, "x")
+  dy <- imager::imgradient(tmp.g, "y")
+  grad.mag <- sqrt(dx^2 + dy^2)
+  plot(grad.mag, main = "Gradient magnitude")
+}
