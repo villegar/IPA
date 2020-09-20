@@ -42,7 +42,7 @@ rgb_decomposition <- function(subdirectory, extension = "jpg", Rdata = TRUE, rec
     }
     else {
       # Save each layer as a separate CSV file (larger)
-      write.csv(matrix(red, nrow = nrow(red)), paste0(j, '-red.csv.gz'))
+      write.csv(matrix(red, nrow = nrow(red)), paste0(j, '-red.csv'))
       write.csv(matrix(green, nrow = nrow(green)), paste0(j, '-green.csv'))
       write.csv(matrix(blue, nrow = nrow(blue)), paste0(j, '-blue.csv'))
     }
