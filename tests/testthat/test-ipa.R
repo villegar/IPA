@@ -5,12 +5,18 @@ test_that("RGB decomposition works", {
     barplot(height = test_data$values, names = test_data$name, col = RGB)
   dev.off()
   rgb_decomposition(".", "png", recursive = FALSE)
+  rgb_decomposition(".", "png", Rdata = FALSE, recursive = FALSE)
   # Check for generated layer files
   filenames <- paste(".",
                      c("test_plot.png",
-                       "test_plot-blue.Rdata",
-                       "test_plot-green.Rdata",
-                       "test_plot-red.Rdata"),
+                       paste0(
+                         c("test_plot-blue.",
+                           "test_plot-green.",
+                           "test_plot-red."
+                         ),
+                         rep(c("Rdata", "csv"), each = 3)
+                       )
+                      ),
                      sep = "/")
   for (f in filenames) {
     message(paste0("Testing: ", f))
