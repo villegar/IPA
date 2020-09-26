@@ -49,26 +49,65 @@ rgb_decomposition <- function(subdirectory, extension = "jpg", Rdata = TRUE, rec
   }
 }
 
-rm_background <- function(subdirectory, extension = "jpg", Rdata = TRUE, recursive = TRUE) {
-  tmp <- imager::load.image(leaves)
+#' Remove image background
+#'
+#' @param image_path filename w/o the full path
+#' @param bkg_thr background threshold, any pixel below this value will be set
+#'     to zero (black) and one (white) in the alpha layer, to create a
+#'     transparency effect.
+#' @param plot boolean flag on whether or not to generate a histogram of the
+#'     pixel values. This can be used to determine an optimal \code{bkg_thr}
+#' @param ... extra parameters for \code{hist}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' test_data <- data.frame(name = c("R", "G"), values = c(2, 2))
+#' RG <- c("red", "green")
+#' png("test_plot.png")
+#' par(bg = 'black')
+#' barplot(height = test_data$values, names = test_data$name, col = RG)
+#' dev.off()
+#' rm_background("test_plot.png", 0.1)
+#' rm_background("test_plot.png", 0.1, TRUE)
+#' rm_background("test_plot.png", 0.1, TRUE, breaks = 10)
+#' }
+rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
+  # Load image
+  tmp <- imager::load.image(image_path)
+  # Remove transparency layer
   tmp <- imager::rm.alpha(tmp)
-  idx <- tmp < 0.4
-  alpha <- matrix(0, 5104, 7200)
-  # alpha <- imager::as.cimg(alpha, 5104, 7200)
-  alpha[!idx] <- 1
-  plot(alpha)
-  alpha <- matrix(alpha, 5104, 7200, byrow = TRUE)
-  alpha <- imager::as.cimg(alpha, 5104, 7200)
-  plot(alpha)
-  tmp[idx] <- 0
-  imager::save.image(tmp, "new.png")
-  plot(tmp)
+  # Extract image dimensions
+  tmp_rows <- dim(tmp)[1]
+  tmp_cols <- dim(tmp)[2]
 
-  tmp.g <- imager::grayscale(tmp)
-  gr <- imager::imgradient(tmp.g, "xy")
-  plot(gr, layout = "row")
-  dx <- imager::imgradient(tmp.g, "x")
-  dy <- imager::imgradient(tmp.g, "y")
-  grad.mag <- sqrt(dx^2 + dy^2)
-  plot(grad.mag, main = "Gradient magnitude")
+  if (plot){
+    out <- hist(tmp, ...)
+  }
+
+  # Find indices for values below the background threshold (bkg_thr)
+  idx <- tmp < bkg_thr
+  # Create a new transparency layer
+  alpha <- matrix(0, tmp_rows, tmp_cols)
+  alpha[!as.array(idx)] <- 1
+  alpha <- matrix(alpha, tmp_rows, tmp_cols)
+  alpha <- imager::as.cimg(alpha, tmp_rows, tmp_cols)
+  # plot(alpha)
+  # Set to zero all the pixels detected as background
+  tmp[idx] <- 0
+  # Combine the original image with the transparency layer
+  tmp2 <- imager::as.cimg(abind::abind(tmp, alpha, along = 4))
+  # Save image to disk (adds the _wb.png suffix)
+  image_path2 <- IPA::drop_extension(image_path)
+  imager::save.image(tmp2, paste0(image_path2, "_wb.png"))
+  # imager::save.image(tmp2, "new3.png")
+  # plot(tmp)
+  # tmp.g <- imager::grayscale(tmp)
+  # gr <- imager::imgradient(tmp.g, "xy")
+  # plot(gr, layout = "row")
+  # dx <- imager::imgradient(tmp.g, "x")
+  # dy <- imager::imgradient(tmp.g, "y")
+  # grad.mag <- sqrt(dx^2 + dy^2)
+  # plot(grad.mag, main = "Gradient magnitude")
 }

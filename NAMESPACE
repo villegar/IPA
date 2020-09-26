@@ -3,6 +3,7 @@
 export(drop_extension)
 export(hex_logo)
 export(rgb_decomposition)
+export(rm_background)
 importFrom(grDevices,dev.off)
 importFrom(grDevices,png)
 importFrom(graphics,barplot)
