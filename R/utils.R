@@ -37,3 +37,21 @@ hex_logo <- function(subplot = system.file("images/beer.png", package = "IPA"),
                       filename = output)
 }
 
+#' Drop the file extension in a string
+#'
+#' @param filename filename w/o full path
+#' @param only_basename boolean flag to indicate if only the base name should
+#'     be returned.
+#'
+#' @return filename without extension
+#' @export
+#'
+#' @examples
+#' drop_extension("/path/to/A.txt")
+#' drop_extension("/path/to/A.txt", TRUE)
+drop_extension <- function(filename, only_basename = FALSE) {
+  if (only_basename) {
+    filename <- basename(filename)
+  }
+  return(sub(pattern = "(.*)\\..*$", replacement = "\\1", filename))
+}
