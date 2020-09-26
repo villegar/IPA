@@ -111,3 +111,20 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
   # grad.mag <- sqrt(dx^2 + dy^2)
   # plot(grad.mag, main = "Gradient magnitude")
 }
+
+clip_img <- function(img, area) {
+  # Create indices
+  idx_x <- area[1]:sum(area[1:2])
+  idx_y <- area[3]:sum(area[3:4])
+  # Extract image dimensions
+  img_rows <- dim(img)[1]
+  img_cols <- dim(img)[2]
+  # Create matrix of zeros
+  tmp <- matrix(0, img_rows, img_cols)
+  tmp[idx_x, idx_y] <- 1
+  tmp <- imager::as.cimg(tmp, img_rows, img_cols)
+  # Set to zero the selected area
+  img[tmp == 1] <- 0
+  # Return new image
+  return(img)
+}
