@@ -112,7 +112,7 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
   # plot(grad.mag, main = "Gradient magnitude")
 }
 
-clip_img <- function(img, area) {
+trim_img <- function(img, area) {
   # Create indices
   idx_x <- area[1]:sum(area[1:2])
   idx_y <- area[3]:sum(area[3:4])
@@ -128,3 +128,4 @@ clip_img <- function(img, area) {
   # Return new image
   return(img)
 }
+
