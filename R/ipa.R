@@ -75,39 +75,39 @@ rgb_decomposition <- function(subdirectory, extension = "jpg", Rdata = TRUE, rec
 #' }
 rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
   # Load image
-  tmp <- imager::load.image(image_path)
+  img <- imager::load.image(image_path)
   # Remove transparency layer
-  tmp <- imager::rm.alpha(tmp)
+  img <- imager::rm.alpha(img)
   # Extract image dimensions
-  tmp_rows <- dim(tmp)[1]
-  tmp_cols <- dim(tmp)[2]
+  img_rows <- dim(img)[1]
+  img_cols <- dim(img)[2]
 
   if (plot){
-    out <- hist(tmp, ...)
+    out <- hist(img, ...)
   }
 
   # Find indices for values below the background threshold (bkg_thr)
-  idx <- tmp < bkg_thr
+  idx <- img < bkg_thr
   # Create a new transparency layer
-  alpha <- matrix(0, tmp_rows, tmp_cols)
+  alpha <- matrix(0, img_rows, img_cols)
   alpha[!as.array(idx)] <- 1
-  alpha <- matrix(alpha, tmp_rows, tmp_cols)
-  alpha <- imager::as.cimg(alpha, tmp_rows, tmp_cols)
+  alpha <- matrix(alpha, img_rows, img_cols)
+  alpha <- imager::as.cimg(alpha, img_rows, img_cols)
   # plot(alpha)
   # Set to zero all the pixels detected as background
-  tmp[idx] <- 0
+  img[idx] <- 0
   # Combine the original image with the transparency layer
-  tmp2 <- imager::as.cimg(abind::abind(tmp, alpha, along = 4))
+  img2 <- imager::as.cimg(abind::abind(img, alpha, along = 4))
   # Save image to disk (adds the _wb.png suffix)
   image_path2 <- IPA::drop_extension(image_path)
-  imager::save.image(tmp2, paste0(image_path2, "_wb.png"))
-  # imager::save.image(tmp2, "new3.png")
-  # plot(tmp)
-  # tmp.g <- imager::grayscale(tmp)
-  # gr <- imager::imgradient(tmp.g, "xy")
+  imager::save.image(img2, paste0(image_path2, "_wb.png"))
+  # imager::save.image(img2, "new3.png")
+  # plot(img)
+  # img.g <- imager::grayscale(img)
+  # gr <- imager::imgradient(img.g, "xy")
   # plot(gr, layout = "row")
-  # dx <- imager::imgradient(tmp.g, "x")
-  # dy <- imager::imgradient(tmp.g, "y")
+  # dx <- imager::imgradient(img.g, "x")
+  # dy <- imager::imgradient(img.g, "y")
   # grad.mag <- sqrt(dx^2 + dy^2)
   # plot(grad.mag, main = "Gradient magnitude")
 }
