@@ -228,3 +228,87 @@ add_alpha <- function(img, area, quiet = TRUE) {
   # Return new image
   return(img)
 }
+
+#' Find continuos group of pixels with a tolerance of \code{px_tol} pixels
+#'
+#' @param img image as cimg file
+#' @param start starting point: \code{c(x0, y0)}
+#' @param px_tol number of non-continuos pixels to accept
+#'
+#' @return blobs containg adjacent groups of non-zero pixels
+# @export
+#'
+# @examples
+find_area <- function(img, start = c(1, 1), px_tol = 20) {
+  # Extract image dimensions
+  img_rows <- dim(img)[1]
+  img_cols <- dim(img)[2]
+  # Initialise variables
+  area_start <- NULL
+  area_end <- NULL
+  i <- 1
+  j <- start[2]
+  blobs <- list()
+  bins <- seq(start[1], img_rows, px_tol)
+
+  # Loop through the image in chunks of (px_tol * px_tols)
+  while (i < length(bins)) {
+    idx_x <- bins[i]:ifelse(bins[i] + px_tol > img_cols, img_cols, bins[i] + px_tol)
+    idx_y <- j:ifelse(j + px_tol > img_rows, img_rows, j + px_tol)
+    print(paste0("(i, j) = (", bins[i], ", ", j, ") to (", max(idx_x), ", ", max(idx_y), ")"))
+    if (any(as.matrix(img[idx_x, idx_y] > 0))) {
+      if (is.null(area_start)) {
+        area_start <- c(bins[i], min(idx_y))
+      }
+      else {
+        area_end <- c(bins[i], max(idx_y))
+        blobs[[length(blobs) + 1]] <- list(start = area_start, end = area_end)
+        # area_start <- c(bins[i], min(idx_y))
+        # area_end <- NULL
+      }
+    } else if(!is.null(area_start)) {
+        area_end <- c(bins[i], max(idx_y))
+        blobs[[length(blobs) + 1]] <- list(start = area_start, end = area_end)
+        area_start <- NULL
+        area_end <- NULL
+        j <- j + px_tol
+        if (j > img_rows) {
+          break
+        }
+        i <- 0
+        print("HERE")
+    } else {
+      area_end <- c(bins[i], max(idx_y))
+      blobs[[length(blobs) + 1]] <- list(start = area_start, end = area_end)
+      break
+    }
+    i <- i + 1
+    # if(i == length(bins)) {
+    #   i <- 1
+    #   j <- j + px_tol
+    #   area_start <- NULL
+    #   area_end <- NULL
+    #   if (j > img_rows) {
+    #     break
+    #   }
+    # }
+  }
+  print(blobs)
+  blobs <- matrix(unlist(blobs), ncol = 4, byrow = TRUE)
+  # blobs_sum <- list()
+  # i <- 2
+  # while (i < nrow(blobs)) {
+  #   if (blobs[i, 1] == blobs[i - 1, 3]) {
+  #     blobs_sum[[length(blobs_sum) + 1]] <- c(blobs[i-1, 1:2], blobs[i, c(1, 3)])
+  #
+  #   }
+  # }
+  return(blobs)
+}
+
+# alpha_mat <- as.matrix(alpha)
+# for (i in 1:nrow(d)) {
+#   print(i)
+#   alpha <- add_alpha(alpha, c(d[i, 1], 100, d[i, 2], 100))
+# }
+# plot(alpha)
