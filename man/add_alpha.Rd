@@ -9,7 +9,11 @@ add_alpha(img, area)
 \arguments{
 \item{img}{image (cimg class)}
 
-\item{area}{area to modify: c(x, width, y, height)}
+\item{area}{area to modify: \code{c(x0, width, y0, height)}
+where: \code{x0} is the starting pixel on the x-axis,
+       \code{width} is the number of pixels along x,
+       \code{y0} is the starting pixel on the y-axis, and
+       \code{height} is the number of pixels along y}
 }
 \value{
 modified image (cimg class)

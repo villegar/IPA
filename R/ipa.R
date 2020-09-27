@@ -115,7 +115,11 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
 #' Add transparency (set pixels to zero) area to image
 #'
 #' @param img image (cimg class)
-#' @param area area to modify: c(x, width, y, height)
+#' @param area area to modify: \code{c(x0, width, y0, height)}
+#'     where: \code{x0} is the starting pixel on the x-axis,
+#'            \code{width} is the number of pixels along x,
+#'            \code{y0} is the starting pixel on the y-axis, and
+#'            \code{height} is the number of pixels along y
 #'
 #' @return modified image (cimg class)
 #' @export
@@ -140,6 +144,9 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
 #' img2 <- add_alpha(img, c(1, 25, 1, 25))
 #' }
 add_alpha <- function(img, area) {
+  if (length(area) != 4) {
+    stop(paste0("area must contain 4 elements (x0, width, y0, height)"))
+  }
   # Create indices
   idx_x <- area[1]:sum(area[1:2])
   idx_y <- area[3]:sum(area[3:4])
