@@ -112,7 +112,34 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
   # plot(grad.mag, main = "Gradient magnitude")
 }
 
-trim_img <- function(img, area) {
+#' Add transparency (set pixels to zero) area to image
+#'
+#' @param img image (cimg class)
+#' @param area area to modify: c(x, width, y, height)
+#'
+#' @return modified image (cimg class)
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Create test image
+#' red <- matrix(0, 50, 50)
+#' red[1:25, 1:25] <- 1
+#' blue <- matrix(0, 50, 50)
+#' blue[26:50, 1:25] <- 1
+#' green <- matrix(0, 50, 50)
+#' green[1:25, 26:50] <- 1
+#' alpha <- matrix(1, 50, 50)
+#' alpha[26:50, 26:50] <- 0
+#' img <- imager::as.cimg(abind::abind(imager::as.cimg(red),
+#'                                     imager::as.cimg(blue),
+#'                                     imager::as.cimg(green),
+#'                                     imager::as.cimg(alpha),
+#'                                     along = 4))
+#' # Remove red portion of the image
+#' img2 <- add_alpha(img, c(1, 25, 1, 25))
+#' }
+add_alpha <- function(img, area) {
   # Create indices
   idx_x <- area[1]:sum(area[1:2])
   idx_y <- area[3]:sum(area[3:4])
@@ -128,4 +155,3 @@ trim_img <- function(img, area) {
   # Return new image
   return(img)
 }
-
