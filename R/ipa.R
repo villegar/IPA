@@ -120,6 +120,7 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
 #'            \code{width} is the number of pixels along x,
 #'            \code{y0} is the starting pixel on the y-axis, and
 #'            \code{height} is the number of pixels along y
+#' @param quiet boolean flag to show message of work area
 #'
 #' @return modified image (cimg class)
 #' @export
@@ -143,20 +144,69 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
 #' # Remove red portion of the image
 #' img2 <- add_alpha(img, c(1, 25, 1, 25))
 #' }
-add_alpha <- function(img, area) {
+add_alpha <- function(img, area, quiet = TRUE) {
+  # Check for cimg class
+  if (!("cimg" %in% class(img))){
+    stop(paste0("image is expected to be of class 'cimg'"))
+  }
+  # Check for number of elements passed to area
   if (length(area) != 4) {
     stop(paste0("area must contain 4 elements (x0, width, y0, height)"))
   }
-  # Create indices
-  idx_x <- area[1]:sum(area[1:2])
-  idx_y <- area[3]:sum(area[3:4])
+
   # Extract image dimensions
   img_rows <- dim(img)[1]
   img_cols <- dim(img)[2]
+
+  # Check if the area is out of bounds
+  if (area[1] > img_cols || area[3] > img_rows) {
+    stop(paste0("The given area is out of bounds. Select an area within ",
+                "(1, 1) and (", img_rows, ", ", img_cols, ")"))
+  }
+
+  # Create indices
+  idx_x <- area[1]:ifelse(sum(area[1:2]) > img_cols, img_cols, sum(area[1:2]))
+  idx_y <- area[3]:ifelse(sum(area[3:4]) > img_rows, img_rows, sum(area[3:4]))
   # Create matrix of zeros
   tmp <- matrix(0, img_rows, img_cols)
   tmp[idx_x, idx_y] <- 1
   tmp <- imager::as.cimg(tmp, img_rows, img_cols)
+  # Display vertices of working area
+  if (!quiet) {
+    # Creat vertices
+    v1 <- paste0("(", min(idx_x), ", ", min(idx_y), ")")
+    v2 <- paste0("(", max(idx_x), ", ", min(idx_y), ") \n")
+    v3 <- paste0("(", min(idx_x), ", ", max(idx_y), ")")
+    v4 <- paste0("(", max(idx_x), ", ", max(idx_y), ")")
+
+    # Verify that both left-most vertices have the same length, if not pad with
+    # blank spaces
+    if (nchar(v1) > nchar(v3)) {
+      v3 <- paste0(v3, rep(" ", times = nchar(v1) - nchar(v3)), collapse = " ")
+    }
+    else if (nchar(v3) > nchar(v1)) {
+      v1 <- paste0(v1, rep(" ", times = nchar(v3) - nchar(v1)), collapse = " ")
+    }
+    # Width = Height
+    len_x <- 3
+    len_y <- 3
+    if (area[2] > area[4]) { # Width > Height
+      len_x <- 6
+    } else if (area[2] < area[4]) { # Width < Height
+      len_y <- 6
+    }
+    # Create template for box sides
+    box_sides <- paste0(paste0(rep(" ", nchar(v1)), collapse = ""),
+                          " |",
+                          paste0(rep(" ", len_x * 3), collapse = ""),
+                          "|\n")
+    top_side <- paste0(rep("_", len_x * 3), collapse = "")
+    # Display message
+    message(paste0("Adding transparency to the area bounded by: \n",
+                   v1, "  ", top_side, "  ", v2,
+                   paste0(rep(box_sides, len_y), collapse = ""),
+                   v3, " |", top_side, "| ", v4))
+  }
   # Set to zero the selected area
   img[tmp == 1] <- 0
   # Return new image
