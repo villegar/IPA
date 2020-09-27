@@ -182,10 +182,14 @@ add_alpha <- function(img, area, quiet = TRUE) {
     # Verify that both left-most vertices have the same length, if not pad with
     # blank spaces
     if (nchar(v1) > nchar(v3)) {
-      v3 <- paste0(v3, rep(" ", times = nchar(v1) - nchar(v3)), collapse = " ")
+      v3 <- paste0(v3,
+                   paste0(rep(" ", times = nchar(v1) - nchar(v3)),
+                          collapse = ""))
     }
     else if (nchar(v3) > nchar(v1)) {
-      v1 <- paste0(v1, rep(" ", times = nchar(v3) - nchar(v1)), collapse = " ")
+      v1 <- paste0(v1,
+                   paste0(rep(" ", times = nchar(v3) - nchar(v1)),
+                          collapse = ""))
     }
     # Width = Height
     len_x <- 3
@@ -209,6 +213,18 @@ add_alpha <- function(img, area, quiet = TRUE) {
   }
   # Set to zero the selected area
   img[tmp == 1] <- 0
+
+  # Update transparency layer
+  if (dim(img)[4] == 4) {
+    alpha <- imager::channel(img, 4)
+    alpha[tmp == 1] <- 0
+    img <- imager::rm.alpha(img)
+  } else {
+    alpha <- matrix(1, img_rows, img_cols)
+    alpha[idx_x, idx_y] <- 0
+    alpha <- imager::as.cimg(alpha, img_rows, img_cols)
+  }
+  img <- imager::as.cimg(abind::abind(img, alpha, along = 4))
   # Return new image
   return(img)
 }
