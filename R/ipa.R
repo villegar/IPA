@@ -13,12 +13,12 @@
 #'
 #' @examples
 #' \dontrun{
-#' test_data <- data.frame(name = c("R", "G", "B"), values = c(2, 2, 2))
-#' RGB <- c("red", "green", "blue")
-#' png("test_plot.png")
-#' barplot(height = test_data$values, names = test_data$name, col = RGB)
-#' dev.off()
-#' rgb_decomposition(".", "png", recursive = FALSE)
+#'     test_data <- data.frame(name = c("R", "G", "B"), values = c(2, 2, 2))
+#'     RGB <- c("red", "green", "blue")
+#'     png("test_plot.png")
+#'     barplot(height = test_data$values, names = test_data$name, col = RGB)
+#'     dev.off()
+#'     rgb_decomposition(".", "png", recursive = FALSE)
 #' }
 rgb_decomposition <- function(subdirectory, extension = "jpg", Rdata = TRUE, recursive = TRUE) {
   extension <- paste0("*", extension, "$") # Adding regex pattern
@@ -63,15 +63,15 @@ rgb_decomposition <- function(subdirectory, extension = "jpg", Rdata = TRUE, rec
 #'
 #' @examples
 #' \dontrun{
-#' test_data <- data.frame(name = c("R", "G"), values = c(2, 2))
-#' RG <- c("red", "green")
-#' png("test_plot.png")
-#' par(bg = 'black')
-#' barplot(height = test_data$values, names = test_data$name, col = RG)
-#' dev.off()
-#' rm_background("test_plot.png", 0.1)
-#' rm_background("test_plot.png", 0.1, TRUE)
-#' rm_background("test_plot.png", 0.1, TRUE, breaks = 10)
+#'     test_data <- data.frame(name = c("R", "G"), values = c(2, 2))
+#'     RG <- c("red", "green")
+#'     png("test_plot.png")
+#'     par(bg = 'black')
+#'     barplot(height = test_data$values, names = test_data$name, col = RG)
+#'     dev.off()
+#'     rm_background("test_plot.png", 0.1)
+#'     rm_background("test_plot.png", 0.1, TRUE)
+#'     rm_background("test_plot.png", 0.1, TRUE, breaks = 10)
 #' }
 rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
   # Load image
@@ -127,22 +127,22 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
 #'
 #' @examples
 #' \dontrun{
-#' # Create test image
-#' red <- matrix(0, 50, 50)
-#' red[1:25, 1:25] <- 1
-#' blue <- matrix(0, 50, 50)
-#' blue[26:50, 1:25] <- 1
-#' green <- matrix(0, 50, 50)
-#' green[1:25, 26:50] <- 1
-#' alpha <- matrix(1, 50, 50)
-#' alpha[26:50, 26:50] <- 0
-#' img <- imager::as.cimg(abind::abind(imager::as.cimg(red),
-#'                                     imager::as.cimg(blue),
-#'                                     imager::as.cimg(green),
-#'                                     imager::as.cimg(alpha),
-#'                                     along = 4))
-#' # Remove red portion of the image
-#' img2 <- add_alpha(img, c(1, 25, 1, 25))
+#'     # Create test image
+#'     red <- matrix(0, 50, 50)
+#'     red[1:25, 1:25] <- 1
+#'     blue <- matrix(0, 50, 50)
+#'     blue[26:50, 1:25] <- 1
+#'     green <- matrix(0, 50, 50)
+#'     green[1:25, 26:50] <- 1
+#'     alpha <- matrix(1, 50, 50)
+#'     alpha[26:50, 26:50] <- 0
+#'     img <- imager::as.cimg(abind::abind(imager::as.cimg(red),
+#'                                         imager::as.cimg(blue),
+#'                                         imager::as.cimg(green),
+#'                                         imager::as.cimg(alpha),
+#'                                         along = 4))
+#'     # Remove red portion of the image
+#'     img2 <- add_alpha(img, c(1, 25, 1, 25))
 #' }
 add_alpha <- function(img, area, quiet = TRUE) {
   # Check for cimg class
