@@ -265,12 +265,13 @@ add_alpha <- function(img, area, quiet = TRUE) {
 
     # Verify that both left-most vertices have the same length, if not pad with
     # blank spaces
-    if (nchar(v1) > nchar(v3)) {
-      v3 <- paste0(v3,
-                   paste0(rep(" ", times = nchar(v1) - nchar(v3)),
-                          collapse = ""))
-    }
-    else if (nchar(v3) > nchar(v1)) {
+    # if (nchar(v1) > nchar(v3)) {
+    #   v3 <- paste0(v3,
+    #                paste0(rep(" ", times = nchar(v1) - nchar(v3)),
+    #                       collapse = ""))
+    # }
+    # else
+    if (nchar(v3) > nchar(v1)) {
       v1 <- paste0(v1,
                    paste0(rep(" ", times = nchar(v3) - nchar(v1)),
                           collapse = ""))
