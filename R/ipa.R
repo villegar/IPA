@@ -63,6 +63,20 @@ rgb_decomposition <- function(subdirectory,
 #'     transparency effect.
 #' @param plot boolean flag on whether or not to generate a histogram of the
 #'     pixel values. This can be used to determine an optimal \code{bkg_thr}
+#' @param trim_areas data frame containing areas to be trimmed (add
+#'     transparency). Each row must have the same format of \code{area} as in
+#'     \code{\link{add_alpha}}: \code{c(x0, width, y0, height)}
+#'     where: \code{x0} is the starting pixel on the x-axis,
+#'            \code{width} is the number of pixels along x,
+#'            \code{y0} is the starting pixel on the y-axis, and
+#'            \code{height} is the number of pixels along y
+#'
+#'     To invert the area (trim right to left or bottom to top), set
+#'     \code{x0 = -1} or \code{y0 = -1} respectively.
+#'
+#'     To modify from \code{x0} to full width, set \code{width = -1}. Similarly,
+#'     for the full height, set \code{height = -1}.
+#' @param quiet boolean flag to hide messages
 #' @param ... extra parameters for \code{hist}
 #'
 #' @export
@@ -78,8 +92,16 @@ rgb_decomposition <- function(subdirectory,
 #'     rm_background("test_plot.png", 0.1)
 #'     rm_background("test_plot.png", 0.1, TRUE)
 #'     rm_background("test_plot.png", 0.1, TRUE, breaks = 10)
+#'     trim_areas <- data.frame(x0 = 1, width = -1, y0 = 1, height = 100)
+#'     trim_areas <- rbind(trim_areas, c(1, -1, -1, 100))
+#'     rm_background("test_plot.png", 0.1, TRUE, trim_areas, breaks = 10)
 #' }
-rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
+rm_background <- function(image_path,
+                          bkg_thr = 0.4,
+                          plot = FALSE,
+                          trim_areas = NULL,
+                          quiet = TRUE,
+                          ...) {
   # Load image
   img <- imager::load.image(image_path)
   # Remove transparency layer
@@ -99,11 +121,25 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
   alpha[!as.array(idx)] <- 1
   alpha <- matrix(alpha, img_rows, img_cols)
   alpha <- imager::as.cimg(alpha, img_rows, img_cols)
-  # plot(alpha)
+
   # Set to zero all the pixels detected as background
   img[idx] <- 0
+
   # Combine the original image with the transparency layer
   img2 <- imager::as.cimg(abind::abind(img, alpha, along = 4))
+
+  # Create a grayscale image and filter values a particular threshold
+  img.g <- imager::grayscale(img)
+  img.g[img.g > 0.3] <- 0
+  img2[img.g > 0] <- 0
+
+  # Add transparency to the areas in trim_areas
+  if (!is.null(trim_areas)) {
+    for (a in seq_len(nrow(trim_areas))) {
+      area <- as.numeric(trim_areas[a, ])
+      img2 <- IPA::add_alpha(img2, area, quiet)
+    }
+  }
   # Save image to disk (adds the _wb.png suffix)
   image_path2 <- IPA::drop_extension(image_path)
   imager::save.image(img2, paste0(image_path2, "_wb.png"))
@@ -126,6 +162,12 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
 #'            \code{width} is the number of pixels along x,
 #'            \code{y0} is the starting pixel on the y-axis, and
 #'            \code{height} is the number of pixels along y
+#'
+#'     To invert the area (trim right to left or bottom to top), set
+#'     \code{x0 = -1} or \code{y0 = -1} respectively.
+#'
+#'     To modify from \code{x0} to full width, set \code{width = -1}. Similarly,
+#'     for the full height, set \code{height = -1}.
 #' @param quiet boolean flag to show message of work area
 #'
 #' @return modified image object (\code{cimg} class)
@@ -148,7 +190,13 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
 #'                                         imager::as.cimg(alpha),
 #'                                         along = 4))
 #'     # Remove red portion of the image
-#'     img2 <- add_alpha(img, c(1, 25, 1, 25))
+#'     plot(add_alpha(img, c(1, 25, 1, 25)))
+#'     # Remove red and green portions
+#'     plot(add_alpha(img, c(1, -1, 1, 25)))
+#'     # Remove red and blue portions
+#'     plot(add_alpha(img, c(1, 25, 1, -1)))
+#'     # Remove green and alpha portions
+#'     plot(add_alpha(img, c(-1, 25, 1, -1)))
 #' }
 add_alpha <- function(img, area, quiet = TRUE) {
   # Check for cimg class
@@ -159,10 +207,38 @@ add_alpha <- function(img, area, quiet = TRUE) {
   if (length(area) != 4) {
     stop(paste0("area must contain 4 elements (x0, width, y0, height)"))
   }
+  # Check for valid horizontal coordinates combination
+  if (area[1] == -1 && area[2] == -1) {
+    warning(paste0("Both x0 and width are -1, this is an invalid combination.",
+                   " Valid combinations are:",
+                   "\n\t * x0 = -1 and width > 0  [trim from right to left]",
+                   "\n\t * x0 > 0  and width = -1 [trim from x0 to full width]"
+    ))
+    # Return original image
+    return(img)
+  }
+  # Check for valid vertical coordinates combination
+  if (area[3] == -1 && area[4] == -1) {
+    warning(paste0("Both y0 and height are -1, this is an invalid combination.",
+                   " Valid combinations are:",
+                   "\n\t * y0 = -1 and height > 0  [trim from bottom to top]",
+                   "\n\t * y0 > 0  and height = -1 [trim from y0 to full ",
+                   "height]"
+    ))
+    # Return original image
+    return(img)
+  }
 
   # Extract image dimensions
-  img_rows <- dim(img)[1]
-  img_cols <- dim(img)[2]
+  img_cols <- dim(img)[1]
+  img_rows <- dim(img)[2]
+
+  # Convert negative values to their corresponding values
+  area[2] <- ifelse(area[2] == -1, img_cols, area[2]) # Full width
+  area[4] <- ifelse(area[4] == -1, img_rows, area[4]) # Full height
+  # Invert trimming area
+  area[1] <- ifelse(area[1] == -1, img_cols - area[2], area[1])
+  area[3] <- ifelse(area[3] == -1, img_rows - area[4], area[3])
 
   # Check if the area is out of bounds
   if (area[1] > img_cols || area[3] > img_rows) {
@@ -173,10 +249,12 @@ add_alpha <- function(img, area, quiet = TRUE) {
   # Create indices
   idx_x <- area[1]:ifelse(sum(area[1:2]) > img_cols, img_cols, sum(area[1:2]))
   idx_y <- area[3]:ifelse(sum(area[3:4]) > img_rows, img_rows, sum(area[3:4]))
+
   # Create matrix of zeros
-  tmp <- matrix(0, img_rows, img_cols)
+  tmp <- matrix(0, img_cols, img_rows)
   tmp[idx_x, idx_y] <- 1
-  tmp <- imager::as.cimg(tmp, img_rows, img_cols)
+  tmp <- imager::as.cimg(tmp, img_cols, img_rows)
+
   # Display vertices of working area
   if (!quiet) {
     # Creat vertices
