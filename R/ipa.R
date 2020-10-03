@@ -55,6 +55,8 @@ rgb_decomposition <- function(subdirectory,
 
 #' Remove image background
 #'
+#' @importFrom graphics hist
+#'
 #' @param image_path filename w/o the full path
 #' @param bkg_thr background threshold, any pixel below this value will be set
 #'     to zero (black) and one (white) in the alpha layer, to create a
