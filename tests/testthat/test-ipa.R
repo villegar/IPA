@@ -33,6 +33,28 @@ test_that("Remove image background works", {
   dev.off()
   rm_background("./test_plot.png", 0.1)
   rm_background("./test_plot.png", 0.1, TRUE, breaks = 10)
+  trim_areas <- data.frame(x0 = 1, width = -1, y0 = 1, height = 100)
+  # Trim from right to left
+  trim_areas <- rbind(trim_areas, c(-1, 100, -1, 100))
+  # Trim from bottom to top
+  trim_areas <- rbind(trim_areas, c(1, 100, 1, -1))
+  rm_background("test_plot.png", 0.1, TRUE, trim_areas, breaks = 10)
+  # Invalid combination of y0 = -1 and height = -1
+  expect_warning(rm_background("test_plot.png",
+                               0.1,
+                               TRUE,
+                               data.frame(x0 = 1,
+                                          width = -1,
+                                          y0 = -1,
+                                          height = -1)))
+  # Invalid combination of x0 = -1 and width = -1
+  expect_warning(rm_background("test_plot.png",
+                               0.1,
+                               TRUE,
+                               data.frame(x0 = -1,
+                                          width = -1,
+                                          y0 = 1,
+                                          height = -1)))
 
   filenames <- c("./test_plot.png", "./test_plot_wb.png")
   for (f in filenames) {
