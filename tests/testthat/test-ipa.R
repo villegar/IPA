@@ -63,6 +63,17 @@ test_that("Add transparency (alpha) works", {
   # Remove red portion of the image
   img2 <- add_alpha(img, c(1, 25, 1, 25))
   expect_equal(sum(as.matrix(imager::R(img2)) > 0), 0) # Zero red pixels
+  # Remove red and green portions
+  img3 <- plot(add_alpha(img, c(1, -1, 1, 25)))
+  expect_equal(sum(as.matrix(imager::R(img3)) > 0) +
+                 sum(as.matrix(imager::G(img3)) > 0), 0)
+  # Remove red and blue portions
+  img4 <- add_alpha(img, c(1, 25, 1, -1))
+  expect_equal(sum(as.matrix(imager::R(img4)) > 0) +
+                 sum(as.matrix(imager::B(img4)) > 0), 0)
+  # Remove green and alpha portions
+  img5 <- plot(add_alpha(img, c(-1, 25, 1, -1)))
+  expect_equal(sum(as.matrix(imager::G(img5)) > 0), 0) # Zero green pixels
   expect_error(add_alpha(img, c(1, 25, 1))) # wrong length for the area param.
   expect_error(add_alpha(as.array(img), c(1, 25, 1, 25))) # wrong class
   expect_error(add_alpha(as.array(img), c(100, 25, 1, 25))) # out of bounds
