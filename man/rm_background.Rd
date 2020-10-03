@@ -23,14 +23,14 @@ Remove image background
 }
 \examples{
 \dontrun{
-test_data <- data.frame(name = c("R", "G"), values = c(2, 2))
-RG <- c("red", "green")
-png("test_plot.png")
-par(bg = 'black')
-barplot(height = test_data$values, names = test_data$name, col = RG)
-dev.off()
-rm_background("test_plot.png", 0.1)
-rm_background("test_plot.png", 0.1, TRUE)
-rm_background("test_plot.png", 0.1, TRUE, breaks = 10)
+    test_data <- data.frame(name = c("R", "G"), values = c(2, 2))
+    RG <- c("red", "green")
+    png("test_plot.png")
+    par(bg = 'black')
+    barplot(height = test_data$values, names = test_data$name, col = RG)
+    dev.off()
+    rm_background("test_plot.png", 0.1)
+    rm_background("test_plot.png", 0.1, TRUE)
+    rm_background("test_plot.png", 0.1, TRUE, breaks = 10)
 }
 }

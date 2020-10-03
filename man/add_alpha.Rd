@@ -25,21 +25,21 @@ Add transparency (set pixels to zero) area to image
 }
 \examples{
 \dontrun{
-# Create test image
-red <- matrix(0, 50, 50)
-red[1:25, 1:25] <- 1
-blue <- matrix(0, 50, 50)
-blue[26:50, 1:25] <- 1
-green <- matrix(0, 50, 50)
-green[1:25, 26:50] <- 1
-alpha <- matrix(1, 50, 50)
-alpha[26:50, 26:50] <- 0
-img <- imager::as.cimg(abind::abind(imager::as.cimg(red),
-                                    imager::as.cimg(blue),
-                                    imager::as.cimg(green),
-                                    imager::as.cimg(alpha),
-                                    along = 4))
-# Remove red portion of the image
-img2 <- add_alpha(img, c(1, 25, 1, 25))
+    # Create test image
+    red <- matrix(0, 50, 50)
+    red[1:25, 1:25] <- 1
+    blue <- matrix(0, 50, 50)
+    blue[26:50, 1:25] <- 1
+    green <- matrix(0, 50, 50)
+    green[1:25, 26:50] <- 1
+    alpha <- matrix(1, 50, 50)
+    alpha[26:50, 26:50] <- 0
+    img <- imager::as.cimg(abind::abind(imager::as.cimg(red),
+                                        imager::as.cimg(blue),
+                                        imager::as.cimg(green),
+                                        imager::as.cimg(alpha),
+                                        along = 4))
+    # Remove red portion of the image
+    img2 <- add_alpha(img, c(1, 25, 1, 25))
 }
 }
