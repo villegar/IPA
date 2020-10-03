@@ -38,7 +38,7 @@ test_that("Remove image background works", {
   trim_areas <- rbind(trim_areas, c(-1, 100, -1, 100))
   # Trim from bottom to top
   trim_areas <- rbind(trim_areas, c(1, 100, 1, -1))
-  rm_background("test_plot.png", 0.1, TRUE, trim_areas, breaks = 10)
+  rm_background("test_plot.png", 0.1, TRUE, trim_areas, FALSE, breaks = 10)
   # Invalid combination of y0 = -1 and height = -1
   expect_warning(rm_background("test_plot.png",
                                0.1,
@@ -55,6 +55,13 @@ test_that("Remove image background works", {
                                           width = -1,
                                           y0 = 1,
                                           height = -1)))
+  expect_error(rm_background("test_plot.png",
+                             0.1,
+                             TRUE,
+                             data.frame(x0 = 500,
+                                        width = 100,
+                                        y0 = 1,
+                                        height = -1)))
 
   filenames <- c("./test_plot.png", "./test_plot_wb.png")
   for (f in filenames) {
@@ -94,8 +101,11 @@ test_that("Add transparency (alpha) works", {
   expect_equal(sum(as.matrix(imager::R(img4)) > 0) +
                  sum(as.matrix(imager::B(img4)) > 0), 0)
   # Remove green and alpha portions
-  img5 <- plot(add_alpha(img, c(-1, 25, 1, -1)))
+  img5 <- add_alpha(img, c(-1, 25, 1, -1))
   expect_equal(sum(as.matrix(imager::G(img5)) > 0), 0) # Zero green pixels
+  # Remove alpha layer prior to adding new transparency
+  img6 <- add_alpha(imager::rm.alpha(img), c(-1, 25, 1, -1))
+
   expect_error(add_alpha(img, c(1, 25, 1))) # wrong length for the area param.
   expect_error(add_alpha(as.array(img), c(1, 25, 1, 25))) # wrong class
   expect_error(add_alpha(as.array(img), c(100, 25, 1, 25))) # out of bounds
