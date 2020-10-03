@@ -7,16 +7,17 @@
 rgb_decomposition(
   subdirectory,
   extension = "jpg",
-  Rdata = TRUE,
+  RData = TRUE,
   recursive = TRUE
 )
 }
 \arguments{
 \item{subdirectory}{main directory to search for images}
 
-\item{extension}{images format or extension [default: jpg]}
+\item{extension}{images format or extension [default: \code{jpg}]}
 
-\item{Rdata}{boolean flag on whether to store the layers as Rdata or CSV}
+\item{RData}{boolean flag on whether to store the layers as \code{RData} or
+\code{CSV}}
 
 \item{recursive}{boolean flag on whether to recursively search for images}
 }

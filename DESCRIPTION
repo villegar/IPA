@@ -29,3 +29,4 @@ Suggests:
 Depends: 
     R (>= 3.6)
 RoxygenNote: 7.1.1
+Language: en-GB

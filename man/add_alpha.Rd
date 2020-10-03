@@ -7,7 +7,7 @@
 add_alpha(img, area, quiet = TRUE)
 }
 \arguments{
-\item{img}{image (cimg class)}
+\item{img}{image object (\code{cimg} class)}
 
 \item{area}{area to modify: \code{c(x0, width, y0, height)}
 where: \code{x0} is the starting pixel on the x-axis,
@@ -18,7 +18,7 @@ where: \code{x0} is the starting pixel on the x-axis,
 \item{quiet}{boolean flag to show message of work area}
 }
 \value{
-modified image (cimg class)
+modified image object (\code{cimg} class)
 }
 \description{
 Add transparency (set pixels to zero) area to image

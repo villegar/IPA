@@ -2,20 +2,20 @@
 % Please edit documentation in R/ipa.R
 \name{find_area}
 \alias{find_area}
-\title{Find continuos group of pixels with a tolerance of \code{px_tol} pixels}
+\title{Find continuous group of pixels with a tolerance of \code{px_tol} pixels}
 \usage{
 find_area(img, start = c(1, 1), px_tol = 20)
 }
 \arguments{
-\item{img}{image as cimg file}
+\item{img}{image object (\code{cimg} class)}
 
 \item{start}{starting point: \code{c(x0, y0)}}
 
-\item{px_tol}{number of non-continuos pixels to accept}
+\item{px_tol}{number of non-continuous pixels to accept}
 }
 \value{
-blobs containg adjacent groups of non-zero pixels
+blobs containing adjacent groups of non-zero pixels
 }
 \description{
-Find continuos group of pixels with a tolerance of \code{px_tol} pixels
+Find continuous group of pixels with a tolerance of \code{px_tol} pixels
 }
