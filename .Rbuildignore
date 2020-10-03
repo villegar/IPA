@@ -1,8 +1,10 @@
-^\.Rproj$
-^\.Rproj\.user$
+^.*\.Rproj$
+^.*\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
 ^LICENSE\.md$
 ^\.github$
 ^runs$
+^R\.ignore$
 
+^\.Rproj\.user$
