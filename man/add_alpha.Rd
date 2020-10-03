@@ -10,10 +10,16 @@ add_alpha(img, area, quiet = TRUE)
 \item{img}{image object (\code{cimg} class)}
 
 \item{area}{area to modify: \code{c(x0, width, y0, height)}
-where: \code{x0} is the starting pixel on the x-axis,
-       \code{width} is the number of pixels along x,
-       \code{y0} is the starting pixel on the y-axis, and
-       \code{height} is the number of pixels along y}
+    where: \code{x0} is the starting pixel on the x-axis,
+           \code{width} is the number of pixels along x,
+           \code{y0} is the starting pixel on the y-axis, and
+           \code{height} is the number of pixels along y
+
+    To invert the area (trim right to left or bottom to top), set
+    \code{x0 = -1} or \code{y0 = -1} respectively.
+
+    To modify from \code{x0} to full width, set \code{width = -1}. Similarly,
+    for the full height, set \code{height = -1}.}
 
 \item{quiet}{boolean flag to show message of work area}
 }
@@ -40,6 +46,12 @@ Add transparency (set pixels to zero) area to image
                                         imager::as.cimg(alpha),
                                         along = 4))
     # Remove red portion of the image
-    img2 <- add_alpha(img, c(1, 25, 1, 25))
+    plot(add_alpha(img, c(1, 25, 1, 25)))
+    # Remove red and green portions
+    plot(add_alpha(img, c(1, -1, 1, 25)))
+    # Remove red and blue portions
+    plot(add_alpha(img, c(1, 25, 1, -1)))
+    # Remove green and alpha portions
+    plot(add_alpha(img, c(-1, 25, 1, -1)))
 }
 }

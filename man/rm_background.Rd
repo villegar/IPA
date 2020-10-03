@@ -4,7 +4,14 @@
 \alias{rm_background}
 \title{Remove image background}
 \usage{
-rm_background(image_path, bkg_thr = 0.4, plot = FALSE, ...)
+rm_background(
+  image_path,
+  bkg_thr = 0.4,
+  plot = FALSE,
+  trim_areas = NULL,
+  quiet = TRUE,
+  ...
+)
 }
 \arguments{
 \item{image_path}{filename w/o the full path}
@@ -15,6 +22,22 @@ transparency effect.}
 
 \item{plot}{boolean flag on whether or not to generate a histogram of the
 pixel values. This can be used to determine an optimal \code{bkg_thr}}
+
+\item{trim_areas}{data frame containing areas to be trimmed (add
+    transparency). Each row must have the same format of \code{area} as in
+    \code{\link{add_alpha}}: \code{c(x0, width, y0, height)}
+    where: \code{x0} is the starting pixel on the x-axis,
+           \code{width} is the number of pixels along x,
+           \code{y0} is the starting pixel on the y-axis, and
+           \code{height} is the number of pixels along y
+
+    To invert the area (trim right to left or bottom to top), set
+    \code{x0 = -1} or \code{y0 = -1} respectively.
+
+    To modify from \code{x0} to full width, set \code{width = -1}. Similarly,
+    for the full height, set \code{height = -1}.}
+
+\item{quiet}{boolean flag to hide messages}
 
 \item{...}{extra parameters for \code{hist}}
 }
@@ -32,5 +55,8 @@ Remove image background
     rm_background("test_plot.png", 0.1)
     rm_background("test_plot.png", 0.1, TRUE)
     rm_background("test_plot.png", 0.1, TRUE, breaks = 10)
+    trim_areas <- data.frame(x0 = 1, width = -1, y0 = 1, height = 100)
+    trim_areas <- rbind(trim_areas, c(1, -1, -1, 100))
+    rm_background("test_plot.png", 0.1, TRUE, trim_areas, breaks = 10)
 }
 }
