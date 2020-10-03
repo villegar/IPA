@@ -5,8 +5,9 @@
 #' @importFrom grDevices png
 #' @importFrom utils write.csv
 #' @param subdirectory main directory to search for images
-#' @param extension images format or extension [default: jpg]
-#' @param Rdata boolean flag on whether to store the layers as Rdata or CSV
+#' @param extension images format or extension [default: \code{jpg}]
+#' @param RData boolean flag on whether to store the layers as \code{RData} or
+#'     \code{CSV}
 #' @param recursive boolean flag on whether to recursively search for images
 #'
 #' @export
@@ -20,7 +21,10 @@
 #'     dev.off()
 #'     rgb_decomposition(".", "png", recursive = FALSE)
 #' }
-rgb_decomposition <- function(subdirectory, extension = "jpg", Rdata = TRUE, recursive = TRUE) {
+rgb_decomposition <- function(subdirectory,
+                              extension = "jpg",
+                              RData = TRUE,
+                              recursive = TRUE) {
   extension <- paste0("*", extension, "$") # Adding regex pattern
   images <- list.files(subdirectory,
                        pattern = extension,
@@ -34,11 +38,11 @@ rgb_decomposition <- function(subdirectory, extension = "jpg", Rdata = TRUE, rec
     blue <- imager::B(tmp) # Extract blue layer
     # Extract filename without extension
     j <- file.path(subdirectory, gsub(".$", "", gsub(extension, "", i)))
-    if (Rdata) {
-      # Save each layer as a separate Rdata file (smaller)
-      save(red, file = paste0(j, '-red.Rdata'))
-      save(green, file = paste0(j, '-green.Rdata'))
-      save(blue, file = paste0(j, '-blue.Rdata'))
+    if (RData) {
+      # Save each layer as a separate RData file (smaller)
+      save(red, file = paste0(j, '-red.RData'))
+      save(green, file = paste0(j, '-green.RData'))
+      save(blue, file = paste0(j, '-blue.RData'))
     }
     else {
       # Save each layer as a separate CSV file (larger)
@@ -114,7 +118,7 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
 
 #' Add transparency (set pixels to zero) area to image
 #'
-#' @param img image (cimg class)
+#' @param img image object (\code{cimg} class)
 #' @param area area to modify: \code{c(x0, width, y0, height)}
 #'     where: \code{x0} is the starting pixel on the x-axis,
 #'            \code{width} is the number of pixels along x,
@@ -122,7 +126,7 @@ rm_background <- function(image_path, bkg_thr = 0.4, plot = FALSE, ...) {
 #'            \code{height} is the number of pixels along y
 #' @param quiet boolean flag to show message of work area
 #'
-#' @return modified image (cimg class)
+#' @return modified image object (\code{cimg} class)
 #' @export
 #'
 #' @examples
@@ -229,13 +233,13 @@ add_alpha <- function(img, area, quiet = TRUE) {
   return(img)
 }
 
-#' Find continuos group of pixels with a tolerance of \code{px_tol} pixels
+#' Find continuous group of pixels with a tolerance of \code{px_tol} pixels
 #'
-#' @param img image as cimg file
+#' @param img image object (\code{cimg} class)
 #' @param start starting point: \code{c(x0, y0)}
-#' @param px_tol number of non-continuos pixels to accept
+#' @param px_tol number of non-continuous pixels to accept
 #'
-#' @return blobs containg adjacent groups of non-zero pixels
+#' @return blobs containing adjacent groups of non-zero pixels
 # @export
 #'
 # @examples
@@ -253,9 +257,12 @@ find_area <- function(img, start = c(1, 1), px_tol = 20) {
 
   # Loop through the image in chunks of (px_tol * px_tols)
   while (i < length(bins)) {
-    idx_x <- bins[i]:ifelse(bins[i] + px_tol > img_cols, img_cols, bins[i] + px_tol)
+    idx_x <- bins[i]:ifelse(bins[i] + px_tol > img_cols,
+                            img_cols,
+                            bins[i] + px_tol)
     idx_y <- j:ifelse(j + px_tol > img_rows, img_rows, j + px_tol)
-    print(paste0("(i, j) = (", bins[i], ", ", j, ") to (", max(idx_x), ", ", max(idx_y), ")"))
+    print(paste0("(i, j) = (", bins[i], ", ", j, ") to ",
+                 "(", max(idx_x), ", ", max(idx_y), ")"))
     if (any(as.matrix(img[idx_x, idx_y] > 0))) {
       if (is.null(area_start)) {
         area_start <- c(bins[i], min(idx_y))

@@ -132,23 +132,23 @@ layer
 
 </table>
 
-For this purpouse we can use the function `rgb_decomposition`, which can
+For this purpose we can use the function `rgb_decomposition`, which can
 be called as follows
 
 ``` r
 rgb_decomposition(subdirectory, 
                   # optional
                   extension = "jpg", 
-                  Rdata = TRUE, 
+                  RData = TRUE, 
                   recursive = TRUE)
 ```
 
 where `subdirectory` is the name of a directory where to search for the
 images. The other arguments are optional; `extension` is the file format
-of the images, `Rdata` is a boolean flag to indicate whether or not the
-layers should be stored as Rdata format or CSV, the latter requires more
-disk space. Finally, `recursive` is a boolean flag on whether or not
-explore the `subdirectory` recursively for more images.
+of the images, `RData` is a boolean flag to indicate whether or not the
+layers should be stored as `RData` format or CSV, the latter requires
+more disk space. Finally, `recursive` is a boolean flag on whether or
+not explore the `subdirectory` recursively for more images.
 
 2.  Call the `rgb_decomposition` function to extract the layers of the
     example image previously created:
@@ -160,5 +160,5 @@ rgb_decomposition("inst/figures/", "png", recursive = FALSE)
 ```
 
 After running this, three new files (per image) will be on disk, called
-`IMAGE-NAME-red.Rdata`, `IMAGE-NAME-green.Rdata`, and
-`IMAGE-NAME-blue.Rdata`.
+`IMAGE-NAME-red.RData`, `IMAGE-NAME-green.RData`, and
+`IMAGE-NAME-blue.RData`.
