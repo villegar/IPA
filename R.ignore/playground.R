@@ -20,10 +20,19 @@ img_wb[img.g > 0] <- 0
 
 
 # Example runs
+tictoc::tic()
+RA_001_2_B <- here::here("runs/extdata/GH127_07_27/RA_001_2_B.jpg")
+trim_areas <- data.frame(x0 = 1, width = -1, y0 = 1, height = 1500)
+trim_areas <- rbind(trim_areas, c(1, -1, -1, 1500))
+IPA::rm_background(RA_001_2_B, bkg_thr = 0.3, trim_areas = trim_areas, quiet = FALSE)
+
 RA_001_2_F <- here::here("runs/extdata/GH127_07_27/RA_001_2_F.jpg")
-IPA::rm_background(RA_001_2_F, bkg_thr = 0.3)
+trim_areas <- data.frame(x0 = 1, width = -1, y0 = 1, height = 1500)
+trim_areas <- rbind(trim_areas, c(1, -1, -1, 1500))
+IPA::rm_background(RA_001_2_F, bkg_thr = 0.3, trim_areas = trim_areas, quiet = FALSE)
 
 RA_002_2_B <- here::here("runs/extdata/GH127_07_27/RA_002_2_B.jpg")
-trim_areas <- data.frame(x0 = 1, width = -1, y0 = 1, height = 2000)
-trim_areas <- rbind(trim_areas, c(1, -1, -1, 2000))
-rm_background(RA_002_2_B, trim_areas = trim_areas, quiet = FALSE)
+trim_areas <- data.frame(x0 = 1, width = -1, y0 = 1, height = 1500)
+trim_areas <- rbind(trim_areas, c(1, -1, -1, 1500))
+IPA::rm_background(RA_002_2_B, trim_areas = trim_areas, quiet = FALSE)
+tictoc::toc()
