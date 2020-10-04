@@ -21,7 +21,7 @@ add_alpha(img, area, quiet = TRUE)
     To modify from \code{x0} to full width, set \code{width = -1}. Similarly,
     for the full height, set \code{height = -1}.}
 
-\item{quiet}{boolean flag to show message of work area}
+\item{quiet}{boolean flag to hide messages of work area}
 }
 \value{
 modified image object (\code{cimg} class)

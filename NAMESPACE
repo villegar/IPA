@@ -2,6 +2,7 @@
 
 export(add_alpha)
 export(drop_extension)
+export(find_area)
 export(hex_logo)
 export(rgb_decomposition)
 export(rm_background)

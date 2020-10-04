@@ -4,7 +4,7 @@
 \alias{find_area}
 \title{Find continuous group of pixels with a tolerance of \code{px_tol} pixels}
 \usage{
-find_area(img, start = c(1, 1), px_tol = 20)
+find_area(img, start = c(1, 1), px_tol = 20, quiet = TRUE)
 }
 \arguments{
 \item{img}{image object (\code{cimg} class)}
@@ -12,10 +12,27 @@ find_area(img, start = c(1, 1), px_tol = 20)
 \item{start}{starting point: \code{c(x0, y0)}}
 
 \item{px_tol}{number of non-continuous pixels to accept}
+
+\item{quiet}{boolean flag to hide messages of progress}
 }
 \value{
 blobs containing adjacent groups of non-zero pixels
 }
 \description{
 Find continuous group of pixels with a tolerance of \code{px_tol} pixels
+}
+\examples{
+\dontrun{
+    # Create test alpha layer
+    alpha <- matrix(0, 50, 50)
+    alpha[10:20, 15:25] <- 1
+    alpha[25:35, 15:25] <- 1
+    alpha[1:50, 40:50] <- 1
+    alpha <- imager::as.cimg(alpha)
+    blobs1 <- find_area(alpha, start = c(10, 15), px_tol = 1)
+    blobs2 <- find_area(alpha, start = c(1, 40), px_tol = 1)
+    blobs3 <- find_area(alpha, start = c(10, 15),
+                        px_tol = 1,
+                        quiet = FALSE))
+}
 }
