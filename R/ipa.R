@@ -137,7 +137,7 @@ rm_background <- function(image_path,
   if (!is.null(trim_areas)) {
     pb <- progress::progress_bar$new(
       format = "Trimming areas (:current/:total) [:bar] :percent",
-      total = nrow(trim_areas), clear = FALSE, width = 50)
+      total = nrow(trim_areas), clear = FALSE, width = 60)
     for (a in seq_len(nrow(trim_areas))) {
       if (quiet) # Show progress bar
         pb$tick()
@@ -173,7 +173,7 @@ rm_background <- function(image_path,
 #'
 #'     To modify from \code{x0} to full width, set \code{width = -1}. Similarly,
 #'     for the full height, set \code{height = -1}.
-#' @param quiet boolean flag to show message of work area
+#' @param quiet boolean flag to hide messages of work area
 #'
 #' @return modified image object (\code{cimg} class)
 #' @export
@@ -324,12 +324,26 @@ add_alpha <- function(img, area, quiet = TRUE) {
 #' @param img image object (\code{cimg} class)
 #' @param start starting point: \code{c(x0, y0)}
 #' @param px_tol number of non-continuous pixels to accept
+#' @param quiet boolean flag to hide messages of progress
 #'
 #' @return blobs containing adjacent groups of non-zero pixels
-# @export
+#' @export
 #'
-# @examples
-find_area <- function(img, start = c(1, 1), px_tol = 20) {
+#' @examples
+#' \dontrun{
+#'     # Create test alpha layer
+#'     alpha <- matrix(0, 50, 50)
+#'     alpha[10:20, 15:25] <- 1
+#'     alpha[25:35, 15:25] <- 1
+#'     alpha[1:50, 40:50] <- 1
+#'     alpha <- imager::as.cimg(alpha)
+#'     blobs1 <- find_area(alpha, start = c(10, 15), px_tol = 1)
+#'     blobs2 <- find_area(alpha, start = c(1, 40), px_tol = 1)
+#'     blobs3 <- find_area(alpha, start = c(10, 15),
+#'                         px_tol = 1,
+#'                         quiet = FALSE))
+#' }
+find_area <- function(img, start = c(1, 1), px_tol = 20, quiet = TRUE) {
   # Extract image dimensions
   img_cols <- dim(img)[1]
   img_rows <- dim(img)[2]
@@ -348,8 +362,10 @@ find_area <- function(img, start = c(1, 1), px_tol = 20) {
                             bins[i] + px_tol)
     idx_y <- j:ifelse(j + px_tol > img_rows, img_rows, j + px_tol)
     idx <- cbind(rep(idx_x, each = length(idx_y)), idx_y, 1, 1)
-    print(paste0("(i, j) = (", bins[i], ", ", j, ") to ",
-                 "(", max(idx_x), ", ", max(idx_y), ")"))
+    if (!quiet) {
+      message(paste0("(i, j) = (", bins[i], ", ", j, ") to ",
+                   "(", max(idx_x), ", ", max(idx_y), ")"))
+    }
     if (any(as.matrix(img[idx] > 0))) {
       if (is.null(area_start)) {
         area_start <- c(bins[i], min(idx_y))
@@ -399,18 +415,50 @@ find_area <- function(img, start = c(1, 1), px_tol = 20) {
     }
   }
   # Convert blobs from list to data frame
+  if (length(blobs) == 0) {
+    warning(paste0("Zero blobs were found. ",
+                   "Try a different starting point (`start`) or \n",
+                   "a different pixel tolerance (`px_tol`)."))
+    return(NULL)
+  }
+
   blobs <- data.frame(matrix(unlist(blobs), ncol = 4, byrow = TRUE))
   drop_blob <- c()
-  # Find redundant blobs (blobs within other blobs)
-  for (i in seq_len(nrow(blobs))) {
-    if (i > 1 && all(blobs[i, -3] == blobs[i - 1, -3])) {
+  # Find adjacent blobs, keep only the largest blob (horizontally)
+  for (i in seq_len(nrow(blobs))[-1]) {
+    if (all(blobs[i - 1, -3] == blobs[i, -3])) {
       drop_blob <- c(drop_blob, i - 1)
     }
   }
-  blobs <- blobs[-drop_blob, ]
+  if (length(drop_blob) > 0)
+    blobs <- blobs[-drop_blob, ]
   blobs <- blobs[, c(1, 3, 2, 4)]
   blobs[, 2] <- blobs[, 2] - blobs[, 1]
   blobs[, 4] <- blobs[, 4] - blobs[, 3]
+
+  drop_blob <- c()
+  # Find adjacent blobs, keep only the largest blob (vertically)
+  for (i in seq_len(nrow(blobs))[-1]) {
+    if (all(blobs[i - 1, -4] == blobs[i, -4]) &&
+        blobs[i - 1, 4] < blobs[i, 4]) {
+      drop_blob <- c(drop_blob, i - 1)
+    }
+  }
+  if (length(drop_blob) > 0)
+    blobs <- blobs[-drop_blob, ]
+
+  drop_blob <- c()
+  # Find redundant blobs (blobs within blobs)
+  for (i in seq_len(nrow(blobs))[-1]) {
+    if (all(blobs[i - 1, 1:2] == blobs[i, 1:2]) &&
+               sum(blobs[i - 1, 3:4]) == blobs[i, 3]) {
+      drop_blob <- c(drop_blob, i - 1)
+      blobs[i, 3] <- blobs[i - 1, 3]
+      blobs[i, 4] <- blobs[i - 1, 4] + blobs[i, 4]
+    }
+  }
+  if (length(drop_blob) > 0)
+    blobs <- blobs[-drop_blob, ]
   colnames(blobs) <- c("x0", "width", "y0", "height")
   return(blobs)
 }
