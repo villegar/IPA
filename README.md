@@ -107,7 +107,7 @@ IPA::rm_background(image_path = AB_001_B, bkg_thr = 0.4)
 5.  Load the newly created image without background. By default, this
     new image will be saved under the same path as the original one,
     with the same name, the suffix `_wb` (without background,
-    transparent), and extensiong
+    transparent), and extension
 `.png`.
 
 <!-- end list -->

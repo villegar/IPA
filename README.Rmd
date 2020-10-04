@@ -92,7 +92,7 @@ IPA::rm_background(image_path = AB_001_B, bkg_thr = 0.4)
 
 5. Load the newly created image without background. By default, this new image
 will be saved under the same path as the original one, with the same name, the
-suffix `_wb` (without background, transparent), and extensiong `.png`.
+suffix `_wb` (without background, transparent), and extension `.png`.
 
 ```{r rm-background-example-data-code-step5, eval = TRUE}
 AB_001_B_wb <- system.file("extdata", "AB_001_B_wb.png", package = "IPA")
