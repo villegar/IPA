@@ -37,7 +37,7 @@ You can install the development version from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages(c("hexSticker", "remotes"))
+install.packages("remotes") # if not installed
 remotes::install_github("villegar/IPA")
 ```
 
@@ -57,6 +57,9 @@ This function removes the background from an image, based on a threshold
 value (`bkg_thr`). This can be found by creating a histogram of the
 image.
 
+Note: currently, it only removes dark backgrounds; a future version will
+have an option for light backgrounds as well.
+
 1.  Start by loading the image to your workspace
 
 <!-- end list -->
@@ -66,7 +69,7 @@ AB_001_B <- system.file("extdata", "AB_001_B.jp2", package = "IPA")
 AB_001_B_img <- imager::load.image(AB_001_B)
 ```
 
-2.  Plot the raw
+2.  (Optional) Plot the raw
 image
 
 <!-- end list -->
@@ -77,20 +80,20 @@ plot(AB_001_B_img)
 
 <img src="man/figures/README-rm-background-example-data-code-step2-1.png" width="100%" />
 
-3.  Generate a pixel
-histogram
+3.  (Optional) Generate a “pixel histogram”
 
 <!-- end list -->
 
 ``` r
 hist(AB_001_B_img, main = "Pixel histogram for AB_001_B")
+abline(v = 0.4, col = "red") # Mark bkg_thr 
 ```
 
 <img src="man/figures/README-rm-background-example-data-code-step3-1.png" width="100%" />
 
 Based on the histogram, we should look for pixel concentration
-(background), for this example, the background is dark, so the
-threshould should be close to zero.
+(background), for this example, the background is dark, so the threshold
+should be close to zero.
 
 4.  Call the `rm_background` function with the corresponding background
     threshold (`bkg_thr = 0.4` for the example image).
@@ -116,6 +119,11 @@ plot(AB_001_B_wb_img)
 ```
 
 <img src="man/figures/README-rm-background-example-data-code-step5-1.png" width="100%" />
+
+Note: the function `plot` displays transparent pixels as 0 (black)
+values, that is why the previous plot shows a black background (to see
+the transparent image, look up for the generated `*_wb.png`
+file).
 
 <!-- <table> -->
 
@@ -144,6 +152,45 @@ plot(AB_001_B_wb_img)
 <!--   </tbody> -->
 
 <!-- </table> -->
+
+6.  (Optional) Detect unwanted elements and remove them, this can be
+    done by extracting the alpha channel (transparency layer) and using
+    the function
+`find_area`.
+
+<!-- end list -->
+
+``` r
+alpha <- imager::channel(AB_001_B_wb_img, 4) # the alpha channel is the fourth one
+blobs <- IPA::find_area(alpha, start = c(2000, 5750), px_tol = 500)
+```
+
+|   x0 | width |   y0 | height |
+| ---: | ----: | ---: | -----: |
+| 2000 |  3000 | 5750 |    500 |
+| 2000 |  2500 | 5750 |   1450 |
+
+Next, remove the previously detected objects, this can be done using the
+function `add_alpha`.
+
+``` r
+for (a in seq_len(nrow(blobs))) {
+  area <- as.numeric(blobs[a, ])
+  AB_001_B_wb_img <- IPA::add_alpha(AB_001_B_wb_img, area = area)
+}
+plot(AB_001_B_wb_img)
+abline(h = 5750, v = 2000, col = "red") # Mark the trimmed area
+```
+
+<img src="man/figures/README-rm-background-example-data-code-step6-1-1.png" width="100%" />
+
+### Detect unwanted elements (`find_area`)
+
+TODO
+
+### Remove unwanted elements (`add_alpha`)
+
+TODO
 
 ### RGB decomposition (`rgb_decomposition`)
 

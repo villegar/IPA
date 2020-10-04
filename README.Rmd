@@ -39,7 +39,7 @@ The goal of IPA is to provide a set of functions for image processing and analys
 
 You can install the development version from [GitHub](https://github.com/) with:
 ``` r
-# install.packages(c("hexSticker", "remotes"))
+install.packages("remotes") # if not installed
 remotes::install_github("villegar/IPA")
 ```
 
@@ -54,6 +54,9 @@ library(IPA)
 This function removes the background from an image, based on a threshold value 
 (`bkg_thr`). This can be found by creating a histogram of the image. 
 
+Note: currently, it only removes dark backgrounds; a future version will have an
+option for light backgrounds as well.
+
 ```{r rm-background-example-data, cache = TRUE, echo = FALSE}
 AB_001_B <- system.file("extdata", "AB_001_B.jp2", package = "IPA")
 IPA::rm_background(AB_001_B, bkg_thr = 0.4)
@@ -66,18 +69,19 @@ AB_001_B <- system.file("extdata", "AB_001_B.jp2", package = "IPA")
 AB_001_B_img <- imager::load.image(AB_001_B)
 ```
 
-2. Plot the raw image
+2. (Optional) Plot the raw image 
 ```{r rm-background-example-data-code-step2, cache = TRUE}
 plot(AB_001_B_img)
 ```
 
-3. Generate a pixel histogram
+3. (Optional) Generate a "pixel histogram"
 ```{r rm-background-example-data-code-step3, cache = TRUE}
 hist(AB_001_B_img, main = "Pixel histogram for AB_001_B")
+abline(v = 0.4, col = "red") # Mark bkg_thr 
 ```
 
 Based on the histogram, we should look for pixel concentration (background), for
-this example, the background is dark, so the threshould should be close to zero.
+this example, the background is dark, so the threshold should be close to zero.
 
 4. Call the `rm_background` function with the corresponding background threshold
  (`bkg_thr = 0.4` for the example image).
@@ -95,6 +99,10 @@ AB_001_B_wb <- system.file("extdata", "AB_001_B_wb.png", package = "IPA")
 AB_001_B_wb_img <- imager::load.image(AB_001_B_wb)
 plot(AB_001_B_wb_img)
 ```
+
+Note: the function `plot` displays transparent pixels as 0 (black) values, that
+is why the previous plot shows a black background (to see the transparent image,
+look up for the generated `*_wb.png` file).
 
 <!-- <table> -->
 <!--   <thead> -->
@@ -118,6 +126,42 @@ AB_001_B_wb <- system.file("extdata", "AB_001_B_wb.png", package = "IPA")
 plot(imager::load.image(AB_001_B))
 plot(imager::load.image(AB_001_B_wb))
 ```
+
+6. (Optional) Detect unwanted elements and remove them, this can be done by 
+extracting the alpha channel (transparency layer) and using the function
+`find_area`.
+
+```{r rm-background-example-data-code-step6, eval = TRUE}
+alpha <- imager::channel(AB_001_B_wb_img, 4) # the alpha channel is the fourth one
+blobs <- IPA::find_area(alpha, start = c(2000, 5750), px_tol = 500)
+```
+
+```{r rm-background-example-data-code-step6-results, echo = FALSE}
+if (!is.null(blobs)) {
+  row.names(blobs) <- 1:nrow(blobs)
+  knitr::kable(blobs)
+}
+```
+
+Next, remove the previously detected objects, this can be done using the 
+function `add_alpha`.
+
+```{r rm-background-example-data-code-step6-1, eval = TRUE}
+for (a in seq_len(nrow(blobs))) {
+  area <- as.numeric(blobs[a, ])
+  AB_001_B_wb_img <- IPA::add_alpha(AB_001_B_wb_img, area = area)
+}
+plot(AB_001_B_wb_img)
+abline(h = 5750, v = 2000, col = "red") # Mark the trimmed area
+```
+
+### Detect unwanted elements (`find_area`)
+
+TODO
+
+### Remove unwanted elements (`add_alpha`)
+
+TODO
 
 ### RGB decomposition (`rgb_decomposition`)
 This function extracts each layer from an image as a matrix, for further processing.
