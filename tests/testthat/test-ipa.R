@@ -111,3 +111,24 @@ test_that("Add transparency (alpha) works", {
   expect_error(add_alpha(as.array(img), c(100, 25, 1, 25))) # out of bounds
   expect_message(img3 <- add_alpha(img, c(1, 25, 1, 25), quiet = FALSE))
 })
+
+test_that("find area works", {
+  # Create test alpha layer
+  alpha <- matrix(0, 50, 50)
+  alpha[10:20, 15:25] <- 1
+  alpha[25:35, 15:25] <- 1
+  alpha[1:50, 40:50] <- 1
+  alpha <- imager::as.cimg(alpha)
+  blobs1 <- find_area(alpha, start = c(10, 15), px_tol = 1)
+  expect_equivalent(blobs1,
+                    data.frame(x0 = 10, width = 11, y0 = 15, height = 11))
+  blobs2 <- find_area(alpha, start = c(1, 40), px_tol = 1)
+  expect_equivalent(blobs2,
+                    data.frame(x0 = 1, width = 49, y0 = 40, height = 10))
+  expect_warning(blobs3 <- find_area(alpha, px_tol = 1))
+  expect_equal(blobs3, NULL)
+  expect_message(blobs4 <- find_area(alpha,
+                                     start = c(10, 15),
+                                     px_tol = 1,
+                                     quiet = FALSE))
+})
