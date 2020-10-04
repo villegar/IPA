@@ -18,7 +18,8 @@ LazyData: true
 Imports:
     abind,
     here,
-    imager
+    imager,
+    progress
 Suggests:
     badger,
     hexSticker,
