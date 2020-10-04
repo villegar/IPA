@@ -7,8 +7,9 @@ always_allow_html: yes
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "figures/README-",
-  out.width = "100%"
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  dpi = 400
 )
 ```
 
@@ -47,6 +48,75 @@ remotes::install_github("villegar/IPA")
 You should start by loading `IPA` on your session.
 ```{r example}
 library(IPA)
+```
+
+### Remove background (`rm_background`)
+This function removes the background from an image, based on a threshold value 
+(`bkg_thr`). This can be found by creating a histogram of the image. 
+
+```{r rm-background-example-data, cache = TRUE, echo = FALSE}
+AB_001_B <- system.file("extdata", "AB_001_B.jp2", package = "IPA")
+IPA::rm_background(AB_001_B, bkg_thr = 0.4)
+AB_001_B_img <- imager::load.image(AB_001_B)
+```
+
+1. Start by loading the image to your workspace
+```{r rm-background-example-data-code-step1, eval = FALSE}
+AB_001_B <- system.file("extdata", "AB_001_B.jp2", package = "IPA")
+AB_001_B_img <- imager::load.image(AB_001_B)
+```
+
+2. Plot the raw image
+```{r rm-background-example-data-code-step2, cache = TRUE}
+plot(AB_001_B_img)
+```
+
+3. Generate a pixel histogram
+```{r rm-background-example-data-code-step3, cache = TRUE}
+hist(AB_001_B_img, main = "Pixel histogram for AB_001_B")
+```
+
+Based on the histogram, we should look for pixel concentration (background), for
+this example, the background is dark, so the threshould should be close to zero.
+
+4. Call the `rm_background` function with the corresponding background threshold
+ (`bkg_thr = 0.4` for the example image).
+ 
+```{r rm-background-example-data-code-step4, eval = FALSE}
+IPA::rm_background(image_path = AB_001_B, bkg_thr = 0.4)
+```
+
+5. Load the newly created image without background. By default, this new image
+will be saved under the same path as the original one, with the same name, the
+suffix `_wb` (without background, transparent), and extensiong `.png`.
+
+```{r rm-background-example-data-code-step5, eval = TRUE}
+AB_001_B_wb <- system.file("extdata", "AB_001_B_wb.png", package = "IPA")
+AB_001_B_wb_img <- imager::load.image(AB_001_B_wb)
+plot(AB_001_B_wb_img)
+```
+
+<!-- <table> -->
+<!--   <thead> -->
+<!--     <tr> -->
+<!--       <th>Original</th> -->
+<!--       <th>Without background</th> -->
+<!--     </tr> -->
+<!--   </thead> -->
+<!--   <tbody> -->
+<!--     <tr> -->
+<!--       <td><img src="inst/extdata/AB_001_B.jpg" alt="original" align="center" width=50%/></td> -->
+<!--       <td><img src="inst/extdata/AB_001_B_wb.png" alt="wb" align="center" width=50%/></td> -->
+<!--     </tr> -->
+<!--   </tbody> -->
+<!-- </table> -->
+
+```{r rm-background-example-data-code, eval = FALSE, echo = FALSE}
+AB_001_B <- system.file("extdata", "AB_001_B.jp", package = "IPA")
+IPA::rm_background(AB_001_B, bkg_thr = 0.4)
+AB_001_B_wb <- system.file("extdata", "AB_001_B_wb.png", package = "IPA")
+plot(imager::load.image(AB_001_B))
+plot(imager::load.image(AB_001_B_wb))
 ```
 
 ### RGB decomposition (`rgb_decomposition`)

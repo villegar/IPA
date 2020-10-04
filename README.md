@@ -5,13 +5,13 @@
 
 <!-- badges: start -->
 
-<!-- [![](https://img.shields.io/badge/devel%20version-0.0.1-blue.svg)](https://github.com/villegar/IPA) -->
+<!-- [![](https://img.shields.io/badge/devel%20version-0.1.0-blue.svg)](https://github.com/villegar/IPA) -->
 
 <!-- [![](https://img.shields.io/github/languages/code-size/villegar/IPA.svg)](https://github.com/villegar/IPA) -->
 
 [![R build
 status](https://github.com/villegar/IPA/workflows/R-CMD-check/badge.svg)](https://github.com/villegar/IPA/actions)
-[![](https://img.shields.io/badge/devel%20version-0.0.1-blue.svg)](https://github.com/villegar/MetaPipe)
+[![](https://img.shields.io/badge/devel%20version-0.1.0-blue.svg)](https://github.com/villegar/MetaPipe)
 [![](https://codecov.io/gh/villegar/IPA/branch/master/graph/badge.svg)](https://codecov.io/gh/villegar/IPA)
 <!-- badges: end -->
 
@@ -50,6 +50,100 @@ You should start by loading `IPA` on your session.
 ``` r
 library(IPA)
 ```
+
+### Remove background (`rm_background`)
+
+This function removes the background from an image, based on a threshold
+value (`bkg_thr`). This can be found by creating a histogram of the
+image.
+
+1.  Start by loading the image to your workspace
+
+<!-- end list -->
+
+``` r
+AB_001_B <- system.file("extdata", "AB_001_B.jp2", package = "IPA")
+AB_001_B_img <- imager::load.image(AB_001_B)
+```
+
+2.  Plot the raw
+image
+
+<!-- end list -->
+
+``` r
+plot(AB_001_B_img)
+```
+
+<img src="man/figures/README-rm-background-example-data-code-step2-1.png" width="100%" />
+
+3.  Generate a pixel
+histogram
+
+<!-- end list -->
+
+``` r
+hist(AB_001_B_img, main = "Pixel histogram for AB_001_B")
+```
+
+<img src="man/figures/README-rm-background-example-data-code-step3-1.png" width="100%" />
+
+Based on the histogram, we should look for pixel concentration
+(background), for this example, the background is dark, so the
+threshould should be close to zero.
+
+4.  Call the `rm_background` function with the corresponding background
+    threshold (`bkg_thr = 0.4` for the example image).
+
+<!-- end list -->
+
+``` r
+IPA::rm_background(image_path = AB_001_B, bkg_thr = 0.4)
+```
+
+5.  Load the newly created image without background. By default, this
+    new image will be saved under the same path as the original one,
+    with the same name, the suffix `_wb` (without background,
+    transparent), and extensiong
+`.png`.
+
+<!-- end list -->
+
+``` r
+AB_001_B_wb <- system.file("extdata", "AB_001_B_wb.png", package = "IPA")
+AB_001_B_wb_img <- imager::load.image(AB_001_B_wb)
+plot(AB_001_B_wb_img)
+```
+
+<img src="man/figures/README-rm-background-example-data-code-step5-1.png" width="100%" />
+
+<!-- <table> -->
+
+<!--   <thead> -->
+
+<!--     <tr> -->
+
+<!--       <th>Original</th> -->
+
+<!--       <th>Without background</th> -->
+
+<!--     </tr> -->
+
+<!--   </thead> -->
+
+<!--   <tbody> -->
+
+<!--     <tr> -->
+
+<!--       <td><img src="inst/extdata/AB_001_B.jpg" alt="original" align="center" width=50%/></td> -->
+
+<!--       <td><img src="inst/extdata/AB_001_B_wb.png" alt="wb" align="center" width=50%/></td> -->
+
+<!--     </tr> -->
+
+<!--   </tbody> -->
+
+<!-- </table> -->
 
 ### RGB decomposition (`rgb_decomposition`)
 
