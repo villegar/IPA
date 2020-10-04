@@ -11,7 +11,7 @@ plot(imager::grayscale(img_wb_alpha))
 img_wb_alpha_blobs4 <- find_area(img_wb_alpha, px_tol = 100)
 img_wb_alpha_blobs2 <- find_area(img_wb_alpha, start = c(1, 5750), px_tol = 500)
 IPA::rm_background(AB_001_B, bkg_thr = 0.4, trim_areas = img_wb_alpha_blobs2, quiet = TRUE)
-Trimming areas (113/113) [======================] 100%
+
 # img <- imager::load.image(AB_001_B)
 # tictoc::tic()
 # IPA::rm_background(AB_001_B)
