@@ -135,7 +135,12 @@ rm_background <- function(image_path,
 
   # Add transparency to the areas in trim_areas
   if (!is.null(trim_areas)) {
+    pb <- progress::progress_bar$new(
+      format = "Trimming areas (:current/:total) [:bar] :percent",
+      total = nrow(trim_areas), clear = FALSE, width = 50)
     for (a in seq_len(nrow(trim_areas))) {
+      if (quiet) # Show progress bar
+        pb$tick()
       area <- as.numeric(trim_areas[a, ])
       img2 <- IPA::add_alpha(img2, area, quiet)
     }
@@ -326,25 +331,26 @@ add_alpha <- function(img, area, quiet = TRUE) {
 # @examples
 find_area <- function(img, start = c(1, 1), px_tol = 20) {
   # Extract image dimensions
-  img_rows <- dim(img)[1]
-  img_cols <- dim(img)[2]
+  img_cols <- dim(img)[1]
+  img_rows <- dim(img)[2]
   # Initialise variables
   area_start <- NULL
   area_end <- NULL
   i <- 1
   j <- start[2]
   blobs <- list()
-  bins <- seq(start[1], img_rows, px_tol)
-
+  bins <- seq(start[1], img_cols, px_tol)
+  consecutive_rows <- 0
   # Loop through the image in chunks of (px_tol * px_tols)
-  while (i < length(bins)) {
+  while (i <= length(bins)) {
     idx_x <- bins[i]:ifelse(bins[i] + px_tol > img_cols,
                             img_cols,
                             bins[i] + px_tol)
     idx_y <- j:ifelse(j + px_tol > img_rows, img_rows, j + px_tol)
+    idx <- cbind(rep(idx_x, each = length(idx_y)), idx_y, 1, 1)
     print(paste0("(i, j) = (", bins[i], ", ", j, ") to ",
                  "(", max(idx_x), ", ", max(idx_y), ")"))
-    if (any(as.matrix(img[idx_x, idx_y] > 0))) {
+    if (any(as.matrix(img[idx] > 0))) {
       if (is.null(area_start)) {
         area_start <- c(bins[i], min(idx_y))
       }
@@ -364,39 +370,47 @@ find_area <- function(img, start = c(1, 1), px_tol = 20) {
           break
         }
         i <- 0
-        print("HERE")
     } else {
-      area_end <- c(bins[i], max(idx_y))
-      blobs[[length(blobs) + 1]] <- list(start = area_start, end = area_end)
+      if (!is.null(area_start)) {
+        area_end <- c(bins[i], max(idx_y))
+        blobs[[length(blobs) + 1]] <- list(start = area_start, end = area_end)
+      }
+      # print(paste0("Consecutive rows: ", consecutive_rows))
+      # if (consecutive_rows > 5) {
+      #   break
+      # } else {
+      #   area_start <- NULL
+      #   area_end <- NULL
+      #   j <- j + px_tol
+      #   if (j > img_rows)
+      #     break
+      #   i <- 0
+      #   consecutive_rows <- consecutive_rows + 1
+      # }
       break
     }
     i <- i + 1
-    # if(i == length(bins)) {
-    #   i <- 1
-    #   j <- j + px_tol
-    #   area_start <- NULL
-    #   area_end <- NULL
-    #   if (j > img_rows) {
-    #     break
-    #   }
-    # }
+    if (i > length(bins) &&
+        (unlist(blobs[[length(blobs)]])[3] + px_tol >= img_cols)) {
+      j <- j + px_tol
+      if (j > img_rows)
+        break
+      i <- 1
+    }
   }
-  print(blobs)
-  blobs <- matrix(unlist(blobs), ncol = 4, byrow = TRUE)
-  # blobs_sum <- list()
-  # i <- 2
-  # while (i < nrow(blobs)) {
-  #   if (blobs[i, 1] == blobs[i - 1, 3]) {
-  #     blobs_sum[[length(blobs_sum) + 1]] <- c(blobs[i-1, 1:2], blobs[i, c(1, 3)])
-  #
-  #   }
-  # }
+  # Convert blobs from list to data frame
+  blobs <- data.frame(matrix(unlist(blobs), ncol = 4, byrow = TRUE))
+  drop_blob <- c()
+  # Find redundant blobs (blobs within other blobs)
+  for (i in seq_len(nrow(blobs))) {
+    if (i > 1 && all(blobs[i, -3] == blobs[i - 1, -3])) {
+      drop_blob <- c(drop_blob, i - 1)
+    }
+  }
+  blobs <- blobs[-drop_blob, ]
+  blobs <- blobs[, c(1, 3, 2, 4)]
+  blobs[, 2] <- blobs[, 2] - blobs[, 1]
+  blobs[, 4] <- blobs[, 4] - blobs[, 3]
+  colnames(blobs) <- c("x0", "width", "y0", "height")
   return(blobs)
 }
-
-# alpha_mat <- as.matrix(alpha)
-# for (i in 1:nrow(d)) {
-#   print(i)
-#   alpha <- add_alpha(alpha, c(d[i, 1], 100, d[i, 2], 100))
-# }
-# plot(alpha)
